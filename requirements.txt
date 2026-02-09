@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+numpy
+scikit-learn
+xgboost
+lightgbm
+nltk==3.7
+torch
+transformers
+textstat
+

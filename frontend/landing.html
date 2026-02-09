@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Text Detector</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb);
+    color: white;
+    overflow-x: hidden;
+}
+
+/* 🌟 HERO */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeIn 0.8s ease;
+}
+
+.hero h1 {
+    font-size: 56px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.hero span {
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 35px;
+    max-width: 700px;
+}
+
+.hero button {
+    padding: 14px 34px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.hero button:hover {
+    transform: scale(1.08);
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+/* 📊 FEATURES SECTION */
+.features {
+    padding: 80px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.features h2 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 60px;
+    font-weight: 800;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 35px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: 0.3s;
+    backdrop-filter: blur(5px);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.feature-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: #38bdf8;
+}
+
+.feature-card p {
+    opacity: 0.85;
+    line-height: 1.6;
+}
+
+/* 🎯 HOW IT WORKS */
+.how-it-works {
+    padding: 80px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.how-it-works h2 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 60px;
+    font-weight: 800;
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.step:nth-child(1) { animation-delay: 0.1s; }
+.step:nth-child(2) { animation-delay: 0.2s; }
+.step:nth-child(3) { animation-delay: 0.3s; }
+
+.step-number {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+}
+
+.step-content h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #38bdf8;
+}
+
+.step-content p {
+    opacity: 0.85;
+    line-height: 1.6;
+}
+
+/* 📈 STATS SECTION */
+.stats {
+    padding: 80px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.stats h2 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 60px;
+    font-weight: 800;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.stat-card {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 56px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    font-size: 18px;
+    opacity: 0.85;
+}
+
+/* 🎨 CTA SECTION */
+.cta {
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.cta h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.cta p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 35px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta button {
+    padding: 16px 40px;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.cta button:hover {
+    transform: scale(1.08);
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+/* 🌫️ MODAL */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    width: 380px;
+    text-align: center;
+    color: #1e293b;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    animation: slideUp 0.4s ease;
+    position: relative;
+}
+
+.modal-box h2 {
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+.modal-box input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.modal-box button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 10px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-box button:hover {
+    background: #1e40af;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #64748b;
+    transition: 0.2s;
+}
+
+.close:hover {
+    color: #1e293b;
+}
+
+/* 🎬 Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 36px;
+    }
+    
+    .hero p, .cta p {
+        font-size: 16px;
+    }
+    
+    .features h2, .how-it-works h2, .stats h2, .cta h2 {
+        font-size: 32px;
+    }
+    
+    .step {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* 🌙 FOOTER DESIGN */
+.site-footer {
+    background: linear-gradient(135deg, #020617, #0f172a, #1e3a8a);
+    padding: 70px 20px 25px;
+    margin-top: 80px;
+    border-top: 2px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 -15px 40px rgba(0,0,0,0.5);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+/* Brand Section */
+.footer-brand {
+    flex: 1;
+    min-width: 260px;
+}
+
+.footer-brand h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.footer-brand p {
+    font-size: 15px;
+    opacity: 0.85;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Link Highlight */
+.footer-link {
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #38bdf8;
+    transition: 0.3s;
+}
+
+.footer-link:hover {
+    color: #22c55e;
+    transform: translateX(5px);
+}
+
+/* Links Columns */
+.footer-links {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-links h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #22c55e;
+}
+
+.footer-links a {
+    display: block;
+    text-decoration: none;
+    color: rgba(255,255,255,0.8);
+    margin: 8px 0;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #38bdf8;
+    transform: translateX(6px);
+}
+
+/* Bottom Bar */
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 14px;
+    opacity: 0.75;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 35px;
+    }
+
+    .footer-links a {
+        transform: none !important;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 🌟 HERO CONTENT -->
+<div class="hero">
+    <h1>Detect <span>AI vs Human</span><br>Text Instantly</h1>
+    <p>
+        A Turnitin-style AI Detection Platform built for accuracy, clarity, and confidence.  
+        Analyze documents, visualize results, and stay in control.
+    </p>
+    <button onclick="openLogin()">Get Started</button>
+</div>
+
+<!-- 📊 FEATURES SECTION -->
+<section class="features">
+    <h2>Why Choose Our Platform?</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>99% Accuracy</h3>
+            <p>Advanced AI models trained on millions of samples to detect even the most sophisticated AI-generated content.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Instant Analysis</h3>
+            <p>Get comprehensive results in seconds. Upload documents and receive detailed reports immediately.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Visual Reports</h3>
+            <p>Interactive charts and highlighted text show exactly which sections are AI-generated or human-written.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Privacy First</h3>
+            <p>Your documents are encrypted and never stored. We prioritize your data security above all else.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3>Multiple Formats</h3>
+            <p>Support for PDF, DOCX, TXT, and more. Analyze any document type with ease.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <h3>Multi-Language</h3>
+            <p>Detect AI content in over 30 languages with the same accuracy and speed.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 🎯 HOW IT WORKS -->
+<section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>Upload Your Document</h3>
+                <p>Simply drag and drop your file or paste text directly into our platform. We support all major document formats including PDF, DOCX, and plain text.</p>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>AI Analysis Engine</h3>
+                <p>Our advanced machine learning algorithms analyze linguistic patterns, sentence structure, and writing style to determine authenticity with exceptional precision.</p>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>Get Detailed Results</h3>
+                <p>Receive a comprehensive report with percentage breakdowns, highlighted sections, and confidence scores. Export results as PDF for your records.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 📈 STATS SECTION -->
+<section class="stats">
+    <h2>Trusted by Thousands</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">500K+</div>
+            <div class="stat-label">Documents Analyzed</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-number">99.2%</div>
+            <div class="stat-label">Accuracy Rate</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Active Users</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-number">30+</div>
+            <div class="stat-label">Languages Supported</div>
+        </div>
+    </div>
+</section>
+
+<!-- 🎨 CTA SECTION -->
+<section class="cta">
+    <h2>Ready to Get Started?</h2>
+    <p>Join thousands of educators, students, and professionals who trust our platform to maintain content authenticity.</p>
+    <button onclick="openLogin()">Start Detecting Now</button>
+</section>
+
+<!-- 🔐 LOGIN MODAL -->
+<div class="modal" id="loginModal">
+    <div class="modal-box">
+        <div class="close" onclick="closeLogin()">✖</div>
+        <h2>Login</h2>
+
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+
+<!-- 🔥 FIREBASE LOGIN -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA3HEF5WtuFPxkc3EBmhkTef-fQvk4td_I",
+  authDomain: "journal-35923.firebaseapp.com",
+  projectId: "journal-35923",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.openLogin = () => {
+    document.getElementById("loginModal").classList.add("show");
+};
+
+window.closeLogin = () => {
+    document.getElementById("loginModal").classList.remove("show");
+};
+
+window.login = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        alert("Enter email & password");
+        return;
+    }
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Check user role in Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            
+            // Redirect based on role
+            if (userData.role === "admin") {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "index.html";
+            }
+        } else {
+            // If no user document exists, treat as regular user
+            window.location.href = "index.html";
+        }
+    } catch (err) {
+        alert("❌ " + err.message);
+    }
+};
+</script>
+<!-- 🌙 FOOTER -->
+<footer class="site-footer">
+    <div class="footer-container">
+
+        <!-- Left -->
+        <div class="footer-brand">
+            <h2>🤖 AI Text Detector</h2>
+            <p>
+                Powered by advanced AI models to ensure authenticity, accuracy, and trust.
+            </p>
+
+            <a href="https://www.requingroup.com/" target="_blank" class="footer-link">
+                🌐 Visit: requingroup.com
+            </a>
+        </div>
+
+        <!-- Middle -->
+        <div class="footer-links">
+            <h3>Quick Links</h3>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">How It Works</a>
+            <a href="#">Start Detecting</a>
+        </div>
+
+        <!-- Right -->
+        <div class="footer-links">
+            <h3>Company</h3>
+            <a href="https://www.requingroup.com/#about" target="_blank">About Us</a>
+            <a href="https://www.requingroup.com/contact" target="_blank">Contact</a>
+            <a href="https://www.requingroup.com/termsandconditions" target="_blank">Privacy Policy</a>
+            <a href="https://www.requingroup.com/termsandconditions" target="_blank">Terms</a>
+        </div>
+
+    </div>
+
+    <!-- Bottom -->
+    <div class="footer-bottom">
+        © 2026 Requin Solutions Pvt Ltd. All Rights Reserved.
+    </div>
+</footer>
+
+</body>
+</html>

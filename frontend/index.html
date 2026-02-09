@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Turnitin Style AI Detector</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- PDF Download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 25px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Animated background particles */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 🔝 TOP BAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    color: white;
+    position: relative;
+    z-index: 10;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
+    padding: 15px 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.user-info {
+    font-weight: 600;
+    font-size: 15px;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.logout {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.logout::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.logout:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.logout:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(239, 68, 68, 0.5);
+}
+
+/* 🧊 MAIN CARD */
+.container {
+    max-width: 1050px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4),
+                0 0 100px rgba(59, 130, 246, 0.1);
+    animation: fadeIn 0.6s ease;
+    position: relative;
+    z-index: 10;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, #1e40af, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* ✍ TEXTAREA */
+textarea {
+    width: 100%;
+    height: 190px;
+    padding: 18px;
+    font-size: 15px;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    resize: vertical;
+    font-family: 'Poppins', sans-serif;
+}
+
+textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background: white;
+}
+
+textarea::placeholder {
+    color: #94a3b8;
+}
+
+/* 🔘 BUTTONS */
+button {
+    margin-top: 18px;
+    margin-right: 12px;
+    padding: 13px 28px;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.analyze {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.analyze:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(59, 130, 246, 0.5);
+}
+
+.clear {
+    background: linear-gradient(135deg, #64748b, #475569);
+    color: white;
+    box-shadow: 0 8px 20px rgba(100, 116, 139, 0.4);
+}
+
+.clear:hover {
+    background: linear-gradient(135deg, #475569, #334155);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(100, 116, 139, 0.5);
+}
+
+.download {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.download:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.5);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* ⏳ LOADING */
+.loading {
+    margin-top: 20px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* 📊 RESULTS */
+.results {
+    margin-top: 40px;
+    display: none;
+    animation: fadeIn 0.5s ease;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 20px;
+    border: 2px solid #e2e8f0;
+}
+
+.results h3 {
+    background: linear-gradient(135deg, #1e40af, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.5rem;
+}
+
+.highlight-box {
+    border: 2px solid #e2e8f0;
+    padding: 25px;
+    border-radius: 16px;
+    line-height: 2;
+    margin-top: 30px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* 🧠 HIGHLIGHTS */
+.ai {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.15));
+    padding: 5px 9px;
+    border-radius: 8px;
+    border-left: 3px solid #ef4444;
+    transition: all 0.2s ease;
+}
+
+.ai:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.25));
+}
+
+.human {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.15));
+    padding: 5px 9px;
+    border-radius: 8px;
+    border-left: 3px solid #10b981;
+    transition: all 0.2s ease;
+}
+
+.human:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.25));
+}
+
+/* 📈 CHART */
+canvas {
+    margin: 25px auto;
+    display: block;
+    max-width: 280px;
+    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 25px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    button {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* 🌙 FOOTER DESIGN */
+.site-footer {
+    background: linear-gradient(135deg, #020617, #0f172a, #1e3a8a);
+    padding: 70px 20px 25px;
+    margin-top: 80px;
+    border-top: 2px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 -15px 40px rgba(0,0,0,0.5);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+/* Brand Section */
+.footer-brand {
+    flex: 1;
+    min-width: 260px;
+}
+
+.footer-brand h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.footer-brand p {
+    font-size: 15px;
+    opacity: 0.85;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Link Highlight */
+.footer-link {
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #38bdf8;
+    transition: 0.3s;
+}
+
+.footer-link:hover {
+    color: #22c55e;
+    transform: translateX(5px);
+}
+
+/* Links Columns */
+.footer-links {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-links h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #22c55e;
+}
+
+.footer-links a {
+    display: block;
+    text-decoration: none;
+    color: rgba(255,255,255,0.8);
+    margin: 8px 0;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #38bdf8;
+    transform: translateX(6px);
+}
+
+/* Bottom Bar */
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 14px;
+    opacity: 0.75;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 35px;
+    }
+
+    .footer-links a {
+        transform: none !important;
+    }
+}
+.footer-brand p {
+    color: white !important;
+    opacity: 1 !important;   /* remove faded effect */
+}
+
+.footer-bottom {
+    color: white !important;
+    opacity: 1 !important;   /* remove faded look */
+}
+
+
+</style>
+</head>
+
+<body>
+
+<!-- 🔝 TOP BAR -->
+<div class="topbar">
+    <div class="user-info" id="userInfo">Loading...</div>
+    <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+<h1>AI vs Human Text Detector</h1>
+
+<textarea id="textInput" placeholder="Paste your document text here..."></textarea>
+
+<br>
+
+<button class="analyze" onclick="analyzeText()">Analyze</button>
+<button class="clear" onclick="clearText()">Clear</button>
+<button class="download" onclick="downloadPDF()">Download PDF</button>
+
+<div id="loading" class="loading"></div>
+
+<div class="results" id="results">
+    <h3 style="text-align:center;">Overall Report</h3>
+    <canvas id="donutChart" width="250"></canvas>
+    <div class="highlight-box" id="highlightedText"></div>
+</div>
+</div>
+
+<!-- ================= YOUR ORIGINAL LOGIC (UNCHANGED) ================= -->
+<script type="module">
+/* 🔒 SAME JS YOU PROVIDED – NOT MODIFIED */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA3HEF5WtuFPxkc3EBmhkTef-fQvk4td_I",
+  authDomain: "journal-35923.firebaseapp.com",
+  projectId: "journal-35923",
+  storageBucket: "journal-35923.firebasestorage.app",
+  messagingSenderId: "140616825850",
+  appId: "1:140616825850:web:27d47a5b9b083ac6968243"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+let chartInstance = null;
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+    document.getElementById("userInfo").innerText =
+        "👤 Logged in as: " + (user.displayName || user.email);
+});
+
+window.logout = async function() {
+    await signOut(auth);
+    window.location.href = "landing.html"; // Changed to landing page
+};
+
+window.clearText = function() {
+    document.getElementById("textInput").value = "";
+    document.getElementById("highlightedText").innerHTML = "";
+    document.getElementById("results").style.display = "none";
+    document.getElementById("loading").innerText = "";
+    if (chartInstance) chartInstance.destroy();
+};
+
+window.analyzeText = async function() {
+    const text = document.getElementById("textInput").value.trim();
+    const loading = document.getElementById("loading");
+    if (!text) return alert("Please enter some text.");
+
+    const user = auth.currentUser;
+    if (!user) return window.location.href = "login.html";
+
+    loading.innerText = "Analyzing document...";
+    const token = await user.getIdToken();
+
+    const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": token },
+        body: JSON.stringify({ text })
+    });
+
+    const data = await response.json();
+    const ctx = document.getElementById("donutChart").getContext("2d");
+    if (chartInstance) chartInstance.destroy();
+
+    chartInstance = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: ["Human", "AI"],
+            datasets: [{ data: [data.overall_human_probability, data.overall_ai_probability],
+                backgroundColor: ["#10b981", "#ef4444"] }]
+        }
+    });
+
+    const box = document.getElementById("highlightedText");
+    box.innerHTML = "";
+    data.sentences.forEach(s => {
+        const span = document.createElement("span");
+        span.innerText = s.sentence + " ";
+        span.className = s.final_label.toLowerCase();
+        box.appendChild(span);
+    });
+
+    document.getElementById("results").style.display = "block";
+    loading.innerText = "✅ Tokens Left: " + data.tokens_left;
+};
+
+window.downloadPDF = function () {
+
+    const results = document.getElementById("results");
+    const canvas = document.getElementById("donutChart");
+
+    // Convert chart to image
+    const chartImage = document.createElement("img");
+    chartImage.src = canvas.toDataURL("image/png");
+    chartImage.style.display = "block";
+    chartImage.style.margin = "auto";
+
+    // Hide canvas & insert image
+    canvas.style.display = "none";
+    canvas.parentNode.insertBefore(chartImage, canvas.nextSibling);
+
+    // Generate PDF
+    html2pdf()
+        .set({
+            margin: 0.5,
+            filename: "Turnitin_Report.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+        })
+        .from(results)
+        .save()
+        .then(() => {
+            // Restore canvas after download
+            chartImage.remove();
+            canvas.style.display = "block";
+        });
+};
+
+</script>
+
+<!-- 🌙 FOOTER -->
+<footer class="site-footer">
+    <div class="footer-container">
+
+        <!-- Left -->
+        <div class="footer-brand">
+            <h2>🤖 AI Text Detector</h2>
+            <p>
+                Powered by advanced AI models to ensure authenticity, accuracy, and trust.
+            </p>
+
+            <a href="https://www.requingroup.com/" target="_blank" class="footer-link">
+                🌐 Visit: requingroup.com
+            </a>
+        </div>
+
+        <!-- Middle -->
+        <div class="footer-links">
+            <h3>Quick Links</h3>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">How It Works</a>
+            <a href="#">Start Detecting</a>
+        </div>
+
+        <!-- Right -->
+        <div class="footer-links">
+            <h3>Company</h3>
+            <a href="https://www.requingroup.com/#about" target="_blank">About Us</a>
+            <a href="https://www.requingroup.com/contact" target="_blank">Contact</a>
+            <a href="https://www.requingroup.com/termsandconditions" target="_blank">Privacy Policy</a>
+            <a href="https://www.requingroup.com/termsandconditions" target="_blank">Terms</a>
+        </div>
+
+    </div>
+
+    <!-- Bottom -->
+    <div class="footer-bottom">
+        © 2026 Requin Solutions Pvt Ltd. All Rights Reserved.
+    </div>
+</footer>
+
+
+</body>
+</html>

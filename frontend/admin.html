@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      margin: 0;
+      padding: 30px;
+      color: #333;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background Effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      animation: pulse 15s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Top Bar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      color: white;
+      position: relative;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 15px 25px;
+      border-radius: 15px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .admin-info {
+      font-weight: 600;
+      font-size: 15px;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      padding: 10px 24px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      font-size: 14px;
+    }
+
+    .logout-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .logout-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(239, 68, 68, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 40px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 40px rgba(96, 165, 250, 0.3);
+      position: relative;
+      z-index: 10;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #1e40af, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.98);
+      padding: 35px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.4),
+        0 0 100px rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      transition: all 0.3s ease;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 30px 70px rgba(0, 0, 0, 0.5),
+        0 0 120px rgba(59, 130, 246, 0.15);
+    }
+
+    input {
+      padding: 14px 18px;
+      width: 260px;
+      margin: 8px;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      outline: none;
+      font-size: 15px;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      transform: translateY(-2px);
+    }
+
+    input::placeholder {
+      color: #94a3b8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    th {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      padding: 16px 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 16px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+      transition: all 0.2s ease;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    button:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .create {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+    }
+
+    .create:hover {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+    }
+
+    .recharge {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .recharge:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+    }
+
+    .delete {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .delete:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+    }
+
+    .view {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+
+    .view:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #status {
+      margin-top: 15px;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      color: #065f46;
+      border-left: 4px solid #10b981;
+      display: inline-block;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    #logs {
+      display: none;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.4),
+        0 0 100px rgba(139, 92, 246, 0.1);
+      margin-top: 30px;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      animation: fadeIn 0.5s ease;
+    }
+
+    #logs h2 {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .log-card {
+      background: linear-gradient(135deg, #faf5ff, #f3f4f6);
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      border-left: 6px solid #8b5cf6;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+      transition: all 0.3s ease;
+      animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .log-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 6px 25px rgba(139, 92, 246, 0.25);
+    }
+
+    .log-card b {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600;
+    }
+
+    /* Input Container */
+    .input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .topbar {
+        padding: 12px 20px;
+      }
+
+      .admin-info {
+        font-size: 13px;
+      }
+
+      .logout-btn {
+        padding: 8px 18px;
+        font-size: 13px;
+      }
+
+      .card {
+        padding: 25px;
+      }
+
+      input {
+        width: 100%;
+        margin: 5px 0;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+
+      button {
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Emoji Enhancement */
+    .emoji {
+      font-size: 1.2em;
+      margin-right: 5px;
+    }
+
+    /* 🌙 FOOTER DESIGN */
+.site-footer {
+    background: linear-gradient(135deg, #020617, #0f172a, #1e3a8a);
+    padding: 70px 20px 25px;
+    margin-top: 80px;
+    border-top: 2px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 -15px 40px rgba(0,0,0,0.5);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+/* Brand Section */
+.footer-brand {
+    flex: 1;
+    min-width: 260px;
+}
+
+.footer-brand h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.footer-brand p {
+    font-size: 15px;
+    opacity: 0.85;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Link Highlight */
+.footer-link {
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #38bdf8;
+    transition: 0.3s;
+}
+
+.footer-link:hover {
+    color: #22c55e;
+    transform: translateX(5px);
+}
+
+/* Links Columns */
+.footer-links {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-links h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #22c55e;
+}
+
+.footer-links a {
+    display: block;
+    text-decoration: none;
+    color: rgba(255,255,255,0.8);
+    margin: 8px 0;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #38bdf8;
+    transform: translateX(6px);
+}
+
+/* Bottom Bar */
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 14px;
+    opacity: 0.75;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 35px;
+    }
+
+    .footer-links a {
+        transform: none !important;
+    }
+}
+.footer-brand p {
+    color: white !important;
+    opacity: 1 !important;   /* remove faded effect */
+}
+
+.footer-bottom {
+    color: white !important;
+    opacity: 1 !important;   /* remove faded look */
+}
+
+  </style>
+</head>
+
+<body>
+
+<!-- Top Bar with Logout -->
+<div class="topbar">
+  <div class="admin-info">🔐 Admin Panel - Logged in</div>
+  <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+</div>
+
+<h1>🔥 Admin Dashboard</h1>
+
+
+<div class="container">
+
+  <!-- ================= CREATE USER ================= -->
+  <div class="card">
+    <h2><span class="emoji">👤</span>Create User</h2>
+
+    <div class="input-container">
+      <input id="email" placeholder="User Email">
+      <input id="password" placeholder="Password">
+      <input id="tokens" type="number" placeholder="Tokens">
+    </div>
+
+    <button class="create" id="createUserBtn">✨ Create User</button>
+
+    <!-- <p id="status"></p> -->
+  </div>
+
+  <!-- ================= USER TABLE ================= -->
+  <div class="card">
+    <h2><span class="emoji">📊</span>User List</h2>
+
+    <table id="userTable">
+      <tr>
+        <th>📧 Email</th>
+        <th>🪙 Tokens</th>
+        <th>💰 Recharge</th>
+        <th>🗑️ Delete</th>
+        <th>📝 Logs</th>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ================= LOGS ================= -->
+  <div id="logs"></div>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script type="module">
+
+/* ================= Firebase ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import {
+  getFirestore, collection, getDocs,
+  doc, updateDoc, deleteDoc,
+  query, where
+} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA3HEF5WtuFPxkc3EBmhkTef-fQvk4td_I",
+  authDomain: "journal-35923.firebaseapp.com",
+  projectId: "journal-35923",
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+/* ================= LOGOUT FUNCTION ================= */
+window.logout = async function() {
+  try {
+    await signOut(auth);
+    window.location.href = "landing.html"; // Redirect to landing page
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert("Error logging out");
+  }
+};
+
+/* ================= CREATE USER ================= */
+document.getElementById("createUserBtn").onclick = async () => {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const tokens = parseInt(document.getElementById("tokens").value);
+
+  if (!email || !password || !tokens) {
+    alert("Fill all fields");
+    return;
+  }
+
+  const res = await fetch("http://localhost:8000/admin/create-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, tokens })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert("❌ Error: " + data.detail);
+    return;
+  }
+
+  document.getElementById("status").innerText =
+    "✅ User Created Successfully!";
+
+  alert("🔥 User Created!");
+  location.reload();
+};
+
+/* ================= LOAD USERS ================= */
+async function loadUsers() {
+
+  const table = document.getElementById("userTable");
+  const snap = await getDocs(collection(db, "users"));
+
+  snap.forEach((u) => {
+
+    const user = u.data();
+    if (user.role === "admin") return;
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${user.email}</td>
+      <td>${user.tokens}</td>
+      <td><button class="recharge" data-id="${u.id}">Recharge</button></td>
+      <td><button class="delete" data-id="${u.id}">Delete</button></td>
+      <td><button class="view" data-uid="${u.id}">View Logs</button></td>
+    `;
+
+    table.appendChild(row);
+  });
+
+  attachActions();
+}
+
+/* ================= BUTTON ACTIONS ================= */
+function attachActions() {
+
+  document.querySelectorAll(".recharge").forEach(btn => {
+    btn.onclick = async () => {
+      const uid = btn.dataset.id;
+      const amount = prompt("Enter new token amount:");
+      if (!amount) return;
+
+      await updateDoc(doc(db, "users", uid), {
+        tokens: parseInt(amount)
+      });
+
+      alert("✅ Tokens Updated");
+      location.reload();
+    };
+  });
+
+  document.querySelectorAll(".delete").forEach(btn => {
+    btn.onclick = async () => {
+      const uid = btn.dataset.id;
+      if (!confirm("Delete user?")) return;
+
+      await deleteDoc(doc(db, "users", uid));
+      alert("❌ User Deleted");
+      location.reload();
+    };
+  });
+
+  document.querySelectorAll(".view").forEach(btn => {
+    btn.onclick = async () => {
+
+      const uid = btn.dataset.uid;
+      const logsBox = document.getElementById("logs");
+
+      logsBox.style.display = "block";
+      logsBox.innerHTML = "<h2><span class='emoji'>📋</span>User Activity Logs</h2>";
+
+      const q = query(
+        collection(db, "scan_logs"),
+        where("uid", "==", uid)
+      );
+
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        logsBox.innerHTML += "<p>No scans found.</p>";
+        return;
+      }
+
+      snap.forEach(d => {
+        const log = d.data();
+
+        const time = log.timestamp?.toDate
+          ? log.timestamp.toDate().toLocaleString()
+          : log.timestamp;
+
+        logsBox.innerHTML += `
+          <div class="log-card">
+            <b>Result:</b> ${log.result}<br>
+            <b>AI:</b> ${log.ai_percent}% |
+            <b>Human:</b> ${log.human_percent}%<br>
+            <b>Time:</b> ${time}
+          </div>
+        `;
+      });
+    };
+  });
+}
+
+loadUsers();
+
+</script>
+<footer class="site-footer">
+    <div class="footer-container">
+
+        <!-- Left -->
+        <div class="footer-brand">
+            <h2>🤖 AI Text Detector</h2>
+            <p>
+                Powered by advanced AI models to ensure authenticity, accuracy, and trust.
+            </p>
+
+            <a href="https://www.requingroup.com/" target="_blank" class="footer-link">
+                🌐 Visit: requingroup.com
+            </a>
+        </div>
+
+        <!-- Middle -->
+        <div class="footer-links">
+            <h3>Quick Links</h3>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">How It Works</a>
+            <a href="#">Start Detecting</a>
+        </div>
+
+        <!-- Right -->
+        <div class="footer-links">
+            <h3>Company</h3>
+            <a href="https://www.requingroup.com/#about" target="_blank">About Us</a>
+            <a href="https://www.requingroup.com/contact" target="_blank">Contact</a>
+            <a href="https://www.requingroup.com/termsandconditions" target="_blank">Privacy Policy</a>
+            <a href="https://www.requingroup.com/termsandconditions" target="_blank">Terms</a>
+        </div>
+
+    </div>
+
+    <!-- Bottom -->
+    <div class="footer-bottom">
+        © 2026 Requin solutions Pvt Ltd. All Rights Reserved.
+    </div>
+</footer>
+</body>
+</html>

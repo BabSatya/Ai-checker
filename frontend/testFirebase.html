@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Firebase Test</title>
+</head>
+<body>
+
+<h2>Firebase Connection Test</h2>
+
+<button onclick="testDB()">Test Firestore</button>
+
+<script type="module">
+  import { db } from "./firebase.js";
+  import { collection, addDoc } from "firebase/firestore";
+
+  console.log("✅ Script Loaded Successfully");
+
+  async function testDB() {
+    console.log("Button Clicked!");
+
+    try {
+      await addDoc(collection(db, "test"), {
+        message: "Hello Firebase!",
+        time: new Date()
+      });
+
+      alert("✅ Firestore Connected Successfully!");
+    } catch (err) {
+      alert("❌ Firestore Error: " + err.message);
+      console.error(err);
+    }
+  }
+
+  window.testDB = testDB;
+</script>
+
+</body>
+</html>
