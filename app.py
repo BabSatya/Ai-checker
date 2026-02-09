@@ -40,7 +40,7 @@ app.include_router(admin_router)
 # ============================
 # Download NLTK Tokenizer
 # ============================
-nltk.download("punkt")
+# nltk.download("punkt")
 
 # ============================
 # Load Model
