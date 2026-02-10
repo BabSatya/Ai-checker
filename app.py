@@ -25,13 +25,16 @@ app = FastAPI(title="Turnitin-Style AI Detector")
 # ============================
 # Middleware
 # ============================
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://ai-checker-alpha.vercel.app",  # your Vercel frontend
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
+) 
 # ============================
 # Register Admin Router
 # ============================
