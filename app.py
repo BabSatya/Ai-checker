@@ -25,16 +25,13 @@ app = FastAPI(title="Turnitin-Style AI Detector")
 # ============================
 # Middleware
 # ============================
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://ai-checker-alpha.vercel.app",  # your Vercel frontend
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
-) 
+)
+
 # ============================
 # Register Admin Router
 # ============================
@@ -43,7 +40,7 @@ app.include_router(admin_router)
 # ============================
 # Download NLTK Tokenizer
 # ============================
-# nltk.download("punkt")
+nltk.download("punkt")
 
 # ============================
 # Load Model
@@ -86,14 +83,43 @@ def classify_turnitin(ai_percent, human_percent, polish_percent):
 
 # ============================
 # Prediction API + Token System
-
-
-
 # ============================
 @app.post("/predict")
-def predict(data: TextInput):
+def predict(data: TextInput, authorization: str = Header(None)):
 
-    text = (data.text or "").strip()
+    # ✅ Step 1: Check Firebase Token
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing Token")
+
+    try:
+        decoded_token = auth.verify_id_token(authorization)
+        uid = decoded_token["uid"]
+    except:
+        raise HTTPException(status_code=401, detail="Invalid Token")
+
+    # ✅ Step 2: Get User from Firestore
+    user_ref = db.collection("users").document(uid)
+    user_doc = user_ref.get()
+
+    if not user_doc.exists:
+        raise HTTPException(status_code=403, detail="User Not Found")
+
+    user_data = user_doc.to_dict()
+    tokens = user_data.get("tokens", 0)
+
+    # ✅ Step 3: Token Finished Check
+    if tokens <= 0:
+        raise HTTPException(status_code=402, detail="TOKEN_FINISHED")
+
+    # ✅ Step 4: Deduct 1 Token
+    user_ref.update({
+        "tokens": tokens - 1
+    })
+
+    # ============================
+    # Normal Prediction Starts
+    # ============================
+    text = data.text.strip()
 
     if not text:
         raise HTTPException(status_code=400, detail="Text is empty")
@@ -102,10 +128,6 @@ def predict(data: TextInput):
 
     if not sentences:
         raise HTTPException(status_code=400, detail="No sentences found")
-
-    # ✅ optional safety limit (prevents Render timeouts)
-    MAX_SENTENCES = 25
-    sentences = sentences[:MAX_SENTENCES]
 
     results = []
     total_ai = 0
@@ -138,7 +160,19 @@ def predict(data: TextInput):
 
     final_doc_label = "AI" if avg_ai > avg_human else "Human"
 
+    # ============================
+    # ✅ SAVE SCAN LOG (ONLY ADDITION)
+    # ============================
+    db.collection("scan_logs").add({
+        "uid": uid,
+        "result": final_doc_label,
+        "ai_percent": round(avg_ai, 2),
+        "human_percent": round(avg_human, 2),
+        "timestamp": datetime.utcnow()
+    })
+
     return {
+        "tokens_left": tokens - 1,
         "overall_human_probability": round(avg_human, 2),
         "overall_ai_probability": round(avg_ai, 2),
         "final_document_label": final_doc_label,
